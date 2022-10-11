@@ -12,10 +12,10 @@ export const getPosts = async (req, res) => {
 
 export const createPost = async (req, res) => {
   const post = req.body;
-  const newPost = new Post(post);
+  const newPost = new Post({...post, creator:req.userId, createdAt :new Date().toISOString()});
   try {
     await newPost.save();
-
+   
     res.status(200).json(newPost);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -25,7 +25,6 @@ export const createPost = async (req, res) => {
 export const updatePost = async (req, res) => {
   const { id: _id } = req.params;
   const post = req.body;
-
   if (!mongoose.Types.ObjectId.isValid(_id))
     return res.status(404).send("no post with tyhat id");
   const updatePost = await Post.findByIdAndUpdate(
